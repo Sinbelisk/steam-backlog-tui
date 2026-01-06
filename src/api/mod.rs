@@ -1,5 +1,4 @@
 use std::fmt::{self, Display};
-use reqwest::Response;
 use serde::Deserialize;
 use tracing::info;
 
@@ -26,10 +25,20 @@ impl fmt::Display for SteamEndpoint {
 impl SteamEndpoint {
 
     pub fn create_path(self) -> util::UrlBuilder{
-        const BASE_URL : &str = "http://api.steampowered.com/IPlayerService";
+        const BASE_URL : &str = "http://api.steampowered.com";
+        let interface = self.get_interface_and_version();
 
         util::UrlBuilder::new(BASE_URL)
-            .endpoint(format!("{}/v0001/", self))
+            .endpoint(interface.0)
+            .endpoint(format!("{}/{}/{}/",interface.0, self, interface.1))
+    }
+
+    // I could make another private method for getting the version, but i am lazy.
+    fn get_interface_and_version(&self) -> (&str, &str) {
+        match self {
+            SteamEndpoint::GetOwnedGames => ("IPlayerService", "v0001"),
+            SteamEndpoint::GetPlayerSummaries => ("ISteamUser", "v0002")
+        }
     }
 }
 
@@ -68,3 +77,4 @@ impl SteamClient {
 }
 
 pub mod steam_library;
+pub mod steamuser_info;

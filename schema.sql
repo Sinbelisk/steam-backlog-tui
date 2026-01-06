@@ -6,7 +6,8 @@ CREATE TABLE game (
     steam_url VARCHAR(255),
     meta_score INTEGER,
     open_score INTEGER,
-    steam_score VARCHAR(100)
+    steam_score VARCHAR(100),
+    backlog_score INTEGER
 );
 
 -- Tags embedded on the steam store pages for a game

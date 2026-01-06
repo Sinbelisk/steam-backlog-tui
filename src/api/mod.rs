@@ -1,6 +1,7 @@
 use std::fmt::{self, Display};
 use reqwest::Response;
 use serde::Deserialize;
+use tracing::info;
 
 use crate::util;
 
@@ -28,7 +29,7 @@ impl SteamEndpoint {
         const BASE_URL : &str = "http://api.steampowered.com/IPlayerService";
 
         util::UrlBuilder::new(BASE_URL)
-            .endpoint(format!("/{}/v0001/", self))
+            .endpoint(format!("{}/v0001/", self))
     }
 }
 
@@ -50,18 +51,20 @@ impl SteamClient {
     }
 
     /// Generic method for GET operations using Steam Web Api
-    async fn get<T, U>(&self, url : U) -> Result<T, Box<dyn std::error::Error>>
+    async fn get<T, U>(self, url : U) -> Result<T, Box<dyn std::error::Error>>
     where 
-        T: for<'de> Deserialize<'de>,
-        U: AsRef<str> + reqwest::IntoUrl,
+        T: for<'de> Deserialize<'de> + fmt::Display,
+        U: AsRef<str> + reqwest::IntoUrl + fmt::Display,
     {
-        let response = self.client.get(url.as_ref()).send().await?;
+        info!("Fetching data from {}", &url);
+
+        let response = self.client.get(url.as_ref().to_owned()).send().await?;
         let wrapper = response.json::<ResponseWrapper<T>>().await?;
 
+        info!("Received data: {}", &wrapper.response);
         Ok(wrapper.response)
     }
 
 }
-
 
 pub mod steam_library;

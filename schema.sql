@@ -34,19 +34,20 @@ CREATE TABLE library (
 );
 
 CREATE TABLE library_game (
-    library_appid INTEGER PRIMARY KEY AUTO_INCREMENT,
+    library_appid INTEGER PRIMARY KEY AUTOINCREMENT,
     steam_id INTEGER,
     appid INTEGER,
     hours_played INTEGER DEFAULT 0,
     note TEXT DEFAULT '',
     status TEXT,
+    order INTEGER DEFAULT 0,
 
     FOREIGN KEY (steam_id) REFERENCES library(steam_id),
     FOREIGN KEY (appid) REFERENCES game(appid)
 );
 
 CREATE TABLE backlog_entry (
-    entry_id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    entry_id INTEGER PRIMARY KEY AUTOINCREMENT,
     appid INTEGER,
 
     FOREIGN KEY (appid) REFERENCES game(appid)
